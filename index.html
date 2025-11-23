@@ -1,15 +1,21 @@
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>NeuroVault Memory Network</title>
-    </head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeuroVault Memory Network</title>
+    <!-- Debugging note: Vite's `base` affects where built assets are referenced.
+         If you see 404s for built assets (e.g. "Failed to load resource: the server responded with a status of 404"),
+         check `vite.config.ts` and set `VITE_BASE='/neurovault/'` (or adjust to your repo path) before building.
+         During development we use a relative module entry below to make dev server and page base compatible. -->
+  </head>
 
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-    </body>
-  </html>
-  
+  <body>
+    <div id="root"></div>
+    <!-- Use a relative path here so the module resolves correctly when served under a repo base.
+         Vite will rewrite asset paths during build according to `base` (vite.config.ts).
+         If you still get a 404 on main.tsx in production, set VITE_BASE prior to building. -->
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>

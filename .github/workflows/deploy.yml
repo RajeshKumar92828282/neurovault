@@ -28,6 +28,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Run asset checks
+        # Ensure build produced the assets referenced in index.html
+        run: |
+          echo "Running asset checker..."
+          node scripts/check-assets.js --dist ./dist --index ./dist/index.html
+
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:

@@ -1,3 +1,46 @@
+import { defineConfig, UserConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+// Use environment variable VITE_BASE if provided, otherwise default to '/'.
+// When building for GitHub Pages under a repo, set VITE_BASE='/neurovault/'.
+const base = process.env.VITE_BASE || process.env.BASE_URL || '/';
+
+export default defineConfig(({ command, mode }): UserConfig => {
+  const isDev = command === 'serve';
+
+  if (isDev) {
+    // Helpful console output during dev
+    // TODO: Remove or reduce verbosity if noisy in CI
+    // eslint-disable-next-line no-console
+    console.log(`[vite] starting dev server — base: ${base}`);
+  }
+
+  return {
+    base,
+    plugins: [react()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    },
+    server: {
+      port: Number(process.env.PORT) || 5173,
+      open: true,
+    },
+    build: {
+      outDir: 'dist',
+      rollupOptions: {
+        output: {
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash][extname]',
+        },
+      },
+    },
+  };
+});
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
