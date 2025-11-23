@@ -31,7 +31,11 @@ export default defineConfig(({ command, mode }): UserConfig => {
     },
     build: {
       outDir: 'dist',
+      // Ensure index.html is used as an explicit input to avoid path confusion
       rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+        },
         output: {
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',

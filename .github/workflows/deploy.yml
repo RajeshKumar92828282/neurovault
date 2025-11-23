@@ -25,6 +25,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run messaging tests
+        # Run the specific messaging unit test to catch regressions in the messaging-safe wrapper
+        run: npm run test:run -- tests/messaging.test.ts
+
       - name: Build
         run: npm run build
 
@@ -46,4 +50,4 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v1
         with:
-          artifact_location: dist
+          artifact: dist

@@ -15,6 +15,10 @@
       // eslint-disable-next-line no-console
       console.error('Root element #root not found in document.');
     } else {
+      // Debug info: show resolved base and current path (helpful when diagnosing 404s)
+      // eslint-disable-next-line no-console
+      console.log('Vite BASE_URL:', import.meta.env.BASE_URL, 'window.location.pathname:', window.location.pathname);
+
       createRoot(rootEl).render(
         <ErrorBoundary>
           <App />
@@ -31,6 +35,11 @@
       if (/failed to fetch|404|Module not found|Failed to fetch/i.test(message)) {
         // eslint-disable-next-line no-console
         console.error('Asset 404 or module load failed. Check `vite.config.ts` base (VITE_BASE) and ensure you built with the correct base.');
+        // Friendly hint UI: for production, consider showing a static message with link to raw index.html
+        if (import.meta.env.PROD) {
+          const el = document.getElementById('root');
+          if (el) el.innerHTML = `<div style="font-family: sans-serif; padding:1rem;"><h2>App failed to load</h2><p>Assets returned 404. Please check the configured <code>base</code> in <code>vite.config.ts</code> and rebuild with the correct path (e.g. <code>VITE_BASE='/neurovault/'</code>).</p><p>Raw index: <a href="${import.meta.env.BASE_URL}index.html">index.html</a></p></div>`;
+        }
       }
     } catch (_) {
       // swallow
