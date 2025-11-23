@@ -1,0 +1,174 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  smartcontracts:
+    runs-on: ubuntu-latest
+    name: Smart Contracts
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Contracts step (deprecated)
+        run: |
+          echo "⚠️  Hardhat/EVM contract steps were removed during migration to Stylus (Arbitrum WASM)."
+          echo "If you need to build or test Stylus WASM artifacts, run the dedicated workflow 'Build and Release Stylus WASM' or use the scripts under contracts/stylus/."
+          echo "See .github/workflows/build_and_release_wasm.yml for CI that builds WASM artifacts."
+
+  wasm-verification:
+    runs-on: ubuntu-latest
+    name: WASM Verification
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check WASM verification script exists
+        run: |
+          if [ ! -f scripts/verify_wasm_fetch.js ]; then
+            echo "❌ WASM verification script not found at scripts/verify_wasm_fetch.js"
+            exit 1
+          fi
+          echo "✅ WASM verification script found"
+
+      - name: Check Stylus ping tool exists
+        run: |
+          if [ ! -f scripts/call_stylus_ping.js ]; then
+            echo "❌ Stylus ping tool not found at scripts/call_stylus_ping.js"
+            exit 1
+          fi
+          echo "✅ Stylus ping tool found"
+
+      - name: Validate verification script syntax
+        run: node scripts/verify_wasm_fetch.js --local /tmp/nonexistent.wasm || true
+        continue-on-error: true
+
+  backend:
+    runs-on: ubuntu-latest
+    name: Backend (Python)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run backend tests
+        run: pytest backend/tests/ -v
+
+      - name: Check code style
+        run: python -m py_compile backend/*.py backend/models/*.py
+
+  frontend:
+    runs-on: ubuntu-latest
+    name: Frontend (React/TypeScript)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          VITE_RPC_URL: https://sepolia-rollup.arbitrum.io/rpc
+          VITE_MEMORY_REGISTRY_ADDRESS: '0x0000000000000000000000000000000000000000'
+          VITE_TARGET_CHAIN_ID: '11155111'
+          VITE_BLOCK_EXPLORER_BASE: https://sepolia.arbiscan.io
+
+      - name: Run frontend tests
+        run: npm run test:run
+
+  security:
+    runs-on: ubuntu-latest
+    name: Security Checks
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Check for secrets
+        run: |
+          if grep -r "0x[0-9a-f]\{64\}" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.json" .; then
+            echo "❌ Potential private keys found in code!"
+            exit 1
+          fi
+
+      - name: Check .env files
+        run: |
+          if git check-ignore .env* > /dev/null 2>&1; then
+            echo "✅ .env files are properly gitignored"
+          fi
+
+  docker:
+    runs-on: ubuntu-latest
+    name: Docker Build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build backend Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.backend
+          push: false
+          tags: neurovault-backend:latest
+
+  documentation:
+    runs-on: ubuntu-latest
+    name: Documentation
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check README exists
+        run: |
+          if [ ! -f README.md ]; then
+            echo "❌ README.md not found"
+            exit 1
+          fi
+
+      - name: Check deployment guide exists
+        run: |
+          if [ ! -f deployment/deploy.md ]; then
+            echo "⚠️  deployment/deploy.md not found"
+          fi
