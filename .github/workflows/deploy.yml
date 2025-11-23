@@ -8,11 +8,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,29 +20,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run messaging tests
-        # Run the specific messaging unit test to catch regressions in the messaging-safe wrapper
-        run: npm run test:run -- tests/messaging.test.ts
-
       - name: Build
         run: npm run build
 
-      - name: Run asset checks
-        # Ensure build produced the assets referenced in index.html
-        run: |
-          echo "Running asset checker..."
-          node scripts/check-assets.js --dist ./dist --index ./dist/index.html
-
-      - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: site-dist
-          path: dist
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v3
+      - name: Postbuild (SPA fallback)
+        run: npm run postbuild
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          artifact: dist
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

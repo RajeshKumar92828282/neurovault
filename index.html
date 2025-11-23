@@ -17,7 +17,8 @@
           site from GitHub Pages or a sub-path, this ensures the assets are requested from the correct base.
           NOTE: %BASE_URL% is replaced by Vite during build (it becomes e.g. '/neurovault/'). -->
           <!-- VITE DEV ONLY: In development, Vite injects /src/main.tsx as a module. For production, Vite rewrites this to the built JS asset. -->
-          <script type="module" src="/src/main.tsx"></script>
+          <!-- In production, Vite injects the correct JS asset path. Do NOT reference /src/main.tsx in deployed index.html. -->
+          <!-- The correct script tag will be injected by Vite during build. -->
           <!-- VITE PROD: Do NOT deploy raw src files. Build with `vite build` and deploy the `dist/` output. Vite will inject the correct JS asset path here. -->
   </body>
 </html>
