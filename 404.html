@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>404 — NeuroVault Memory Network</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <script>
+      // SPA fallback for GitHub Pages: fetch the app's index and render it.
+      // This allows client-side routing (React Router) to work on Pages.
+      (function () {
+        var base = '/neurovault/';
+        var indexUrl = base + 'index.html';
+        fetch(indexUrl)
+          .then(function (r) {
+            if (!r.ok) throw new Error('Failed to fetch index');
+            return r.text();
+          })
+          .then(function (html) {
+            document.open();
+            document.write(html);
+            document.close();
+          })
+          .catch(function () {
+            // On failure, redirect to repo base (best-effort)
+            window.location.href = base;
+          });
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

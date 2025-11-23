@@ -1,3 +1,17 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+// Vite config for GitHub Pages under repo path `/neurovault/`
+export default defineConfig({
+  base: '/neurovault/',
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
+});
 
   import { defineConfig } from 'vite';
   import react from '@vitejs/plugin-react';
