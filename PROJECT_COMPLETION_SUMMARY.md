@@ -403,7 +403,7 @@ All engineering work has been finished. The codebase is clean, tested, documente
 
 ---
 
-**Completed By:** GitHub Copilot (AI Assistant)
+**Completed By:** Abhinav Dash, Rajesh Kumar Behera, Prasasti Kumar Baitharu
 
 **Completion Date:** November 23, 2025
 

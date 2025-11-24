@@ -13,42 +13,30 @@ Decentralized AI memory storage on Arbitrum Network with Stylus WASM smart contr
 - Node.js 16+ and npm
 - Python 3.9+ (for backend)
 - Rust (for WASM compilation, optional for deployment)
-- MetaMask or compatible EVM wallet
 
-### Installation & Running Locally
-
-1. **Install dependencies:**
 
 ```bash
 npm install
 pip install -r backend/requirements.txt  # Python backend
 ```
 
-2. **Start the frontend (Vite dev server):**
 
 ```bash
 npm run dev
 # Runs on http://localhost:5173
-```
 
 ### Run with Docker (development)
 
-If you prefer to run the services in containers for development, a `docker-compose` setup is provided. It mounts your local source so edits are reflected instantly.
-
 1. Build and start services:
-
 ```powershell
 docker compose -f docker-compose.dev.yml up --build
 ```
 
-2. Open the apps:
 
 - Frontend: http://localhost:5173
-- Backend: http://localhost:8001
 
 Environment variables are read from `.env.local` by the compose file. Ensure it exists before starting.
 
-3. **Start the backend (FastAPI, in another terminal):**
 
 ```bash
 python backend/app.py
@@ -92,12 +80,7 @@ See [PROJECT_COMPLETION_SUMMARY.md](PROJECT_COMPLETION_SUMMARY.md) for detailed 
 ### Technology Stack
 
 - **Frontend:** React 18 + TypeScript + Vite
-- **Backend:** FastAPI (Python 3.9+)
-- **Smart Contracts:** Stylus (Rust → WASM) on Arbitrum
-- **Storage:** SQLite (local), IPFS (distributed)
-- **State Management:** Zustand (frontend)
 - **Styling:** Tailwind CSS + Shadcn/ui
-- **Testing:** Vitest (frontend), pytest (backend)
 - **CI/CD:** GitHub Actions
 
 ### Core Features
